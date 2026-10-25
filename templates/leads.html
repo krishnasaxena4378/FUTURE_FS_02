@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}All Leads - Lead Manager{% endblock %}
+
+{% block content %}
+<h1>All Leads</h1>
+
+<!-- A GET form: the search text and status end up in the URL (?q=...&status=...) -->
+<form class="filters" method="get" action="{{ url_for('list_leads') }}">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search by name or email">
+  <select name="status">
+    <option value="">All statuses</option>
+    {% for s in statuses %}
+      <option value="{{ s }}" {% if s == status %}selected{% endif %}>{{ s }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-primary" type="submit">Search</button>
+  {% if search or status %}<a class="btn" href="{{ url_for('list_leads') }}">Clear</a>{% endif %}
+</form>
+
+<p class="muted">{{ leads|length }} lead{{ '' if leads|length == 1 else 's' }} found</p>
+
+{% if leads %}
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>Name</th><th>Email</th><th>Phone</th><th>Source</th><th>Status</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+  {% for lead in leads %}
+    <tr>
+      <td><a href="{{ url_for('view_lead', lead_id=lead['id']) }}">{{ lead['name'] }}</a></td>
+      <td>{{ lead['email'] }}</td>
+      <td>{{ lead['phone'] or '-' }}</td>
+      <td>{{ lead['source'] }}</td>
+      <td><span class="badge badge-{{ lead['status']|lower }}">{{ lead['status'] }}</span></td>
+      <td class="actions">
+        <a class="btn btn-small" href="{{ url_for('view_lead', lead_id=lead['id']) }}">View</a>
+        <a class="btn btn-small" href="{{ url_for('edit_lead', lead_id=lead['id']) }}">Edit</a>
+        <form method="post" action="{{ url_for('delete_lead', lead_id=lead['id']) }}"
+              data-confirm="Delete {{ lead['name'] }}? This cannot be undone.">
+          <button class="btn btn-small btn-danger" type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="empty">No leads match. <a href="{{ url_for('add_lead') }}">Add a lead</a>.</p>
+{% endif %}
+{% endblock %}

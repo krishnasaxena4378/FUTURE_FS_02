@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ lead['name'] }} - Lead Manager{% endblock %}
+
+{% block content %}
+<p><a href="{{ url_for('list_leads') }}">&larr; Back to all leads</a></p>
+<h1>{{ lead['name'] }} <span class="badge badge-{{ lead['status']|lower }}">{{ lead['status'] }}</span></h1>
+
+<dl class="details">
+  <dt>Email</dt><dd><a href="mailto:{{ lead['email'] }}">{{ lead['email'] }}</a></dd>
+  <dt>Phone</dt><dd>{{ lead['phone'] or '-' }}</dd>
+  <dt>Enquiry source</dt><dd>{{ lead['source'] }}</dd>
+  <dt>Added on</dt><dd>{{ lead['created_at'] }}</dd>
+  <dt>Notes</dt><dd class="notes">{{ lead['notes'] or 'No notes yet.' }}</dd>
+</dl>
+
+<h2>Update status</h2>
+<form class="inline-form" method="post" action="{{ url_for('update_status', lead_id=lead['id']) }}">
+  <select name="status">
+    {% for s in statuses %}
+      <option value="{{ s }}" {% if s == lead['status'] %}selected{% endif %}>{{ s }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-primary" type="submit">Update</button>
+</form>
+
+<div class="form-buttons">
+  <a class="btn" href="{{ url_for('edit_lead', lead_id=lead['id']) }}">Edit lead</a>
+  <form method="post" action="{{ url_for('delete_lead', lead_id=lead['id']) }}"
+        data-confirm="Delete {{ lead['name'] }}? This cannot be undone.">
+    <button class="btn btn-danger" type="submit">Delete lead</button>
+  </form>
+</div>
+{% endblock %}

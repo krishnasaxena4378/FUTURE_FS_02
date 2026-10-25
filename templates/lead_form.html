@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Lead' if editing else 'Add Lead' }} - Lead Manager{% endblock %}
+
+{% block content %}
+<h1>{{ 'Edit Lead' if editing else 'Add Lead' }}</h1>
+
+<!-- method="post" sends the data in the request body; action is the URL that receives it -->
+<form class="form" method="post">
+  <label>Name *
+    <input type="text" name="name" value="{{ lead['name'] }}" maxlength="100" required>
+  </label>
+
+  <label>Email *
+    <input type="email" name="email" value="{{ lead['email'] }}" required>
+  </label>
+
+  <label>Phone
+    <input type="tel" name="phone" value="{{ lead['phone'] or '' }}" placeholder="+91 98765 43210">
+  </label>
+
+  <label>Enquiry Source *
+    <select name="source" required>
+      <option value="">-- choose --</option>
+      {% for s in sources %}
+        <option value="{{ s }}" {% if s == lead['source'] %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Status
+    <select name="status">
+      {% for s in statuses %}
+        <option value="{{ s }}" {% if s == lead['status'] %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Notes
+    <textarea name="notes" rows="5" maxlength="2000">{{ lead['notes'] or '' }}</textarea>
+  </label>
+
+  <div class="form-buttons">
+    <button class="btn btn-primary" type="submit">{{ 'Save Changes' if editing else 'Add Lead' }}</button>
+    <a class="btn" href="{{ url_for('list_leads') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

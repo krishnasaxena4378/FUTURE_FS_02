@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Lead Manager{% endblock %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="cards">
+  <a class="card" href="{{ url_for('list_leads') }}">
+    <span class="card-number">{{ stats.total }}</span>
+    <span class="card-label">Total Leads</span>
+  </a>
+  <a class="card card-new" href="{{ url_for('list_leads', status='New') }}">
+    <span class="card-number">{{ stats.new }}</span>
+    <span class="card-label">New</span>
+  </a>
+  <a class="card card-contacted" href="{{ url_for('list_leads', status='Contacted') }}">
+    <span class="card-number">{{ stats.contacted }}</span>
+    <span class="card-label">Contacted</span>
+  </a>
+  <a class="card card-converted" href="{{ url_for('list_leads', status='Converted') }}">
+    <span class="card-number">{{ stats.converted }}</span>
+    <span class="card-label">Converted</span>
+  </a>
+</div>
+
+<h2>Recent Leads</h2>
+{% if recent %}
+<table>
+  <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Added</th></tr></thead>
+  <tbody>
+  {% for lead in recent %}
+    <tr>
+      <td><a href="{{ url_for('view_lead', lead_id=lead['id']) }}">{{ lead['name'] }}</a></td>
+      <td>{{ lead['email'] }}</td>
+      <td><span class="badge badge-{{ lead['status']|lower }}">{{ lead['status'] }}</span></td>
+      <td>{{ lead['created_at'][:10] }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No leads yet. <a href="{{ url_for('add_lead') }}">Add your first lead</a>.</p>
+{% endif %}
+{% endblock %}
