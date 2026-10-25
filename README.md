@@ -169,6 +169,40 @@ Each delete form has `data-confirm="Delete Asha? This cannot be undone."`. `scri
 
 ---
 
+## Deploy on PythonAnywhere (free)
+
+SQLite needs a disk it can write to. Serverless hosts such as **Vercel** have a read-only disk, so this app crashes there with
+`sqlite3.OperationalError: unable to open database file`. PythonAnywhere keeps your files, so the app works without changes.
+
+1. Create a free account at https://www.pythonanywhere.com (your site will be `YOURNAME.pythonanywhere.com`).
+2. Open the **Consoles** tab, start a **Bash** console and run:
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/FUTURE_FS_02.git
+   cd FUTURE_FS_02
+   pip install --user -r requirements.txt
+   ```
+3. Open the **Web** tab, click **Add a new web app**, choose **Manual configuration** (not Flask), and pick a Python 3.10+ version.
+4. On the Web tab, under **Code**, click the **WSGI configuration file** link. Delete everything in it and paste:
+   ```python
+   import os
+   import sys
+
+   project = "/home/YOURNAME/FUTURE_FS_02"
+   if project not in sys.path:
+       sys.path.insert(0, project)
+
+   os.environ["SECRET_KEY"] = "put-a-long-random-text-here"
+
+   from app import app as application
+   ```
+   Replace `YOURNAME` with your PythonAnywhere username. Save.
+5. Click the green **Reload** button on the Web tab, then open `https://YOURNAME.pythonanywhere.com`.
+
+`leads.db` is created automatically in the project folder the first time the app loads, and it stays there between reloads.
+To update the site later: in a Bash console run `cd FUTURE_FS_02 && git pull`, then click **Reload**.
+
+If something fails, check the **Error log** link on the Web tab.
+
 ## Upload to GitHub
 
 **Step 1 - Create the repository on GitHub**

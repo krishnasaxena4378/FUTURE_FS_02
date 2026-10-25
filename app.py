@@ -7,7 +7,10 @@ from flask import Flask, abort, flash, g, redirect, render_template, request, ur
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "change-me-in-production")
-app.config["DATABASE"] = os.path.join(os.path.dirname(__file__), "leads.db")
+# The database file sits next to app.py. Set DATABASE_PATH to store it somewhere else.
+app.config["DATABASE"] = os.environ.get(
+    "DATABASE_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "leads.db")
+)
 
 STATUSES = ["New", "Contacted", "Converted"]
 SOURCES = ["Website", "Referral", "Social Media", "Email", "Phone Call", "Other"]
