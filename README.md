@@ -169,6 +169,26 @@ Each delete form has `data-confirm="Delete Asha? This cannot be undone."`. `scri
 
 ---
 
+## Deploy on Render (paid, about $7.25/month, data is kept)
+
+Render runs the app as a normal server, and a **persistent disk** keeps `leads.db` safe across restarts and redeploys.
+(Vercel does not work for this app: its disk is read-only, so SQLite fails with `unable to open database file`.)
+
+The repo already contains `render.yaml`, which sets everything up (gunicorn, a 1 GB disk at `/var/data`, `DATABASE_PATH`, `SECRET_KEY`).
+
+1. Create an account at https://render.com and add a payment method.
+2. Click **New +** > **Blueprint**, connect your GitHub account and pick the `FUTURE_FS_02` repository.
+3. Render reads `render.yaml` and shows one web service with a disk. Click **Apply** / **Deploy**.
+4. Wait for the first deploy to finish (a few minutes). Open the `https://lead-manager-xxxx.onrender.com` link shown on the service page.
+5. To update later: `git push` to `main` and Render redeploys automatically.
+
+Cost: the paid web service is $7/month and the disk is $0.25 per GB per month (see https://render.com/pricing).
+Do not remove the disk: without it, the database file is erased on every deploy.
+
+Without Blueprints you can create a **Web Service** by hand instead: Build command `pip install -r requirements.txt`,
+Start command `gunicorn app:app`, add a Disk mounted at `/var/data`, and set the environment variable
+`DATABASE_PATH=/var/data/leads.db` plus a random `SECRET_KEY`.
+
 ## Deploy on PythonAnywhere (free)
 
 SQLite needs a disk it can write to. Serverless hosts such as **Vercel** have a read-only disk, so this app crashes there with
